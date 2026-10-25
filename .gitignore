@@ -1,0 +1,11 @@
+# Notes personnelles
+ROADMAP.md
+
+# Binaires compilés
+dvf-tui
+dvftui
+*.exe
+dist/
+
+# Données DVF téléchargées ou déposées à la main
+data/
