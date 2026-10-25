@@ -39,10 +39,22 @@ carte ──« a »──▶ critères ──« ↵ »──▶ résultats ─�
 
 ## Installation
 
+Des binaires prêts à l'emploi pour Linux, macOS et Windows (amd64 et arm64)
+sont publiés à chaque version dans les *Releases* du dépôt : il suffit
+d'extraire l'archive et de lancer `dvf-tui` depuis un terminal.
+
+- **macOS** : un binaire téléchargé par le navigateur est mis en quarantaine
+  par Gatekeeper ; `xattr -d com.apple.quarantine dvf-tui` le débloque.
+- **Windows** : utiliser Windows Terminal (fourni avec Windows 11). L'ancienne
+  console `cmd.exe` rend mal les couleurs, la souris et les caractères de la
+  carte.
+
+Depuis les sources (Go 1.22 ou plus) :
+
 ```bash
-go mod tidy
+cd app
 go build -o dvf-tui .
-./dvf-tui            # racine des données : data/ (créée si absente)
+./dvf-tui            # racine des données : voir « Emplacements »
 ```
 
 Le dossier passé en argument sert de racine aux données extraites.
