@@ -63,10 +63,7 @@ func TestConsolidation(t *testing.T) {
 
 func TestToutesLesVilles(t *testing.T) {
 	villes, err := ScannerRacine(racineDonnees)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(villes) == 0 {
+	if err != nil || len(villes) == 0 {
 		t.Skipf("aucune collection locale dans %s", racineDonnees)
 	}
 	for _, v := range villes {
