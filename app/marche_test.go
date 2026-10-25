@@ -193,7 +193,7 @@ func (p portailCommune) Chercher(_ context.Context, c Criteres) ([]Annonce, int,
 // TestOngletMarche suit l'onglet de bout en bout, réseau excepté : la commande
 // produite par la touche est exécutée à la main, et son message réinjecté.
 func TestOngletMarche(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	var lignes []string

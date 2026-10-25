@@ -144,7 +144,7 @@ func TestNavigationCarte(t *testing.T) {
 
 // TestParcoursStats vérifie l'enchaînement commune -> millésimes -> onglets.
 func TestParcoursStats(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	archiveFactice(t, "2024", "64",
@@ -225,7 +225,7 @@ func TestCollectionLocale(t *testing.T) {
 // TestTableauEtFiche vérifie le tableau des ventes de l'onglet Maisons, le
 // déplacement du curseur, le changement de tri et l'ouverture d'une fiche.
 func TestTableauEtFiche(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	archiveFactice(t, "2024", "64",

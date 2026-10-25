@@ -10,6 +10,17 @@ import (
 	"time"
 )
 
+// isolerCache donne au test un cache vierge. os.UserCacheDir ne lit
+// XDG_CACHE_HOME que sous Linux : macOS part de HOME, Windows de LocalAppData.
+// Sans les trois, les tests partagent le vrai cache et se contaminent.
+func isolerCache(t *testing.T) {
+	t.Helper()
+	dir := t.TempDir()
+	t.Setenv("XDG_CACHE_HOME", dir)
+	t.Setenv("HOME", dir)
+	t.Setenv("LocalAppData", dir)
+}
+
 // archiveFactice fabrique une archive départementale minimale dans le cache.
 func archiveFactice(t *testing.T, annee, dep string, lignes ...string) {
 	t.Helper()
@@ -45,7 +56,7 @@ func archiveFactice(t *testing.T, annee, dep string, lignes ...string) {
 // TestExtractionCommune vérifie que le découpage d'une archive départementale
 // produit une arborescence que le lecteur existant sait relire.
 func TestExtractionCommune(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	archiveFactice(t, "2024", "64",
@@ -83,7 +94,7 @@ func TestExtractionCommune(t *testing.T) {
 
 // TestExtractionCommuneVide ne doit rien laisser derrière elle.
 func TestExtractionCommuneVide(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	archiveFactice(t, "2024", "64",
@@ -119,7 +130,7 @@ func TestDetecterSeparateur(t *testing.T) {
 // TestCacheEtMarquage vérifie le repérage de ce qui est déjà téléchargé, qui
 // sert à teinter la carte.
 func TestCacheEtMarquage(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	archiveFactice(t, "2024", "64")
 
 	if !ArchiveFraiche("2024", "64") {
@@ -141,7 +152,7 @@ func TestTelechargementReel(t *testing.T) {
 	if testing.Short() {
 		t.Skip("réseau")
 	}
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 
 	r := TelechargerArchive(context.Background(), "2024", "48", false)
 	if r.Err != nil {
@@ -174,7 +185,7 @@ func TestTelechargementReel(t *testing.T) {
 // de l'archive arrive jusqu'au jeu de données d'une commune, avec la date de la
 // dernière vente.
 func TestPublicationSuitLExtrait(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	archiveFactice(t, "2024", "64",

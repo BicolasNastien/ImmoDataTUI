@@ -124,7 +124,7 @@ func TestChoisirSourcesDGFiP(t *testing.T) {
 // l'archive convertie doit passer par le découpage communal et la
 // consolidation sans que ni l'un ni l'autre ne sache d'où elle vient.
 func TestConversionDGFiP(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	racine := t.TempDir()
 
 	adresse := map[string]string{
@@ -223,7 +223,7 @@ func TestConversionDGFiP(t *testing.T) {
 // TestConversionDGFiPAbsent : un département absent du fichier brut
 // (l'Alsace-Moselle n'y figure pas) ne doit laisser aucune archive.
 func TestConversionDGFiPAbsent(t *testing.T) {
-	t.Setenv("XDG_CACHE_HOME", t.TempDir())
+	isolerCache(t)
 	z := zipFactice(t, venteBrute("08/01/2026", "130000,00", "01", "244", nil))
 
 	archive, err := CheminArchive("2026", "67")
