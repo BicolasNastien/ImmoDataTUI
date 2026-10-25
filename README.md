@@ -34,7 +34,7 @@ carte de France ──▶ région ──▶ département ──▶ commune ─�
 ## Installation
 
 Télécharger l'archive de son système sur la page
-[Releases](https://github.com/BicolasNastien/dvf-tui/releases/latest),
+[Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest),
 l'extraire et lancer `dvf-tui` dans un terminal. Disponible pour Linux, macOS
 et Windows (processeurs Intel/AMD et ARM).
 

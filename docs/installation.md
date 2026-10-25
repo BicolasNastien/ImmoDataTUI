@@ -16,7 +16,7 @@ installer.
 ## Choisir son archive
 
 Les archives sont publiées sur la page
-[Releases](https://github.com/BicolasNastien/dvf-tui/releases/latest) :
+[Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest) :
 
 | Système | Processeur | Archive |
 |---|---|---|
@@ -53,8 +53,8 @@ ci-dessous.
 VERSION=0.1.0
 ARCH=amd64          # ou arm64
 cd /tmp
-curl -LO "https://github.com/BicolasNastien/dvf-tui/releases/download/v${VERSION}/dvf-tui_${VERSION}_linux_${ARCH}.tar.gz"
-curl -LO "https://github.com/BicolasNastien/dvf-tui/releases/download/v${VERSION}/checksums.txt"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/dvf-tui_${VERSION}_linux_${ARCH}.tar.gz"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/checksums.txt"
 sha256sum -c checksums.txt --ignore-missing
 
 tar -xzf "dvf-tui_${VERSION}_linux_${ARCH}.tar.gz"
@@ -87,8 +87,8 @@ installation de bureau). Sur un serveur ou via SSH, le lien complet est affiché
 VERSION=0.1.0
 ARCH=arm64          # Apple Silicon ; amd64 pour un Mac Intel
 cd /tmp
-curl -LO "https://github.com/BicolasNastien/dvf-tui/releases/download/v${VERSION}/dvf-tui_${VERSION}_darwin_${ARCH}.tar.gz"
-curl -LO "https://github.com/BicolasNastien/dvf-tui/releases/download/v${VERSION}/checksums.txt"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/dvf-tui_${VERSION}_darwin_${ARCH}.tar.gz"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/checksums.txt"
 shasum -a 256 -c checksums.txt --ignore-missing
 
 tar -xzf "dvf-tui_${VERSION}_darwin_${ARCH}.tar.gz"
@@ -120,7 +120,7 @@ Les liens s'ouvrent dans le navigateur par défaut via la commande `open`.
 ## Windows
 
 1. Télécharger `dvf-tui_<version>_windows_amd64.zip` (ou `arm64`) depuis la
-   page [Releases](https://github.com/BicolasNastien/dvf-tui/releases/latest).
+   page [Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest).
 2. *Clic droit → Extraire tout…*, puis déplacer `dvf-tui.exe` dans un dossier
    stable, par exemple `%LocalAppData%\Programs\dvf-tui\`.
 3. Ajouter ce dossier au `PATH` pour pouvoir lancer `dvf-tui` de n'importe où.
@@ -162,8 +162,8 @@ dernière version stable : les binaires produits par Go 1.22.0 sont refusés par
 les versions récentes de macOS.
 
 ```bash
-git clone https://github.com/BicolasNastien/dvf-tui.git
-cd dvf-tui/app
+git clone https://github.com/BicolasNastien/ImmoDataTUI.git
+cd ImmoDataTUI/app
 go build -o dvf-tui .       # dvf-tui.exe sous Windows
 ./dvf-tui
 ```
