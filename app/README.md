@@ -73,6 +73,19 @@ communes fusionnés pour l'outre-mer), simplifiés puis embarqués. Le premier
 | Contours de communes | `~/.cache/dvf-tui/geo/communes-<dd>.json` |
 | Extraits par commune | `<racine>/<Commune>/<année>/<code INSEE>.csv` |
 
+Sans argument, la racine est `data/` si ce dossier existe là où l'on lance le
+programme, sinon le dossier de données de l'utilisateur :
+
+| Système | Racine par défaut |
+|---|---|
+| Linux | `$XDG_DATA_HOME/dvf-tui/data` (à défaut `~/.local/share/dvf-tui/data`) |
+| macOS | `~/Library/Application Support/dvf-tui/data` |
+| Windows | `%LocalAppData%\dvf-tui\data` |
+
+Le cache (`~/.cache/dvf-tui` ci-dessus) suit de même la convention de chaque
+système : `~/Library/Caches/dvf-tui` sous macOS, `%LocalAppData%\dvf-tui` sous
+Windows.
+
 Les extraits adoptent l'arborescence que le programme sait déjà lire : un fichier
 téléchargé et un fichier déposé à la main sont indiscernables, et une collection
 existante continue de fonctionner sans migration. La touche `l` ouvre cette
