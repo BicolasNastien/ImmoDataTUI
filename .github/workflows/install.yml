@@ -22,6 +22,11 @@ jobs:
         env:
           INSTALL_DIR: ${{ runner.temp }}/bin
       - run: test -x "$RUNNER_TEMP/bin/dvf-tui"
+      # La commande telle que la documentation la donne, sur le script de ce commit.
+      - run: curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/install.sh" | sh
+        env:
+          INSTALL_DIR: ${{ runner.temp }}/bin-curl
+      - run: test -x "$RUNNER_TEMP/bin-curl/dvf-tui"
 
   windows:
     strategy:
@@ -37,3 +42,8 @@ jobs:
         env:
           INSTALL_DIR: ${{ runner.temp }}\bin
       - run: if (-not (Test-Path "$env:RUNNER_TEMP\bin\dvf-tui.exe")) { exit 1 }
+      # La commande telle que la documentation la donne, sur le script de ce commit.
+      - run: irm "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/install.ps1" | iex
+        env:
+          INSTALL_DIR: ${{ runner.temp }}\bin-irm
+      - run: if (-not (Test-Path "$env:RUNNER_TEMP\bin-irm\dvf-tui.exe")) { exit 1 }
