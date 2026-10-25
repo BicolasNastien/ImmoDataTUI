@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          # go.mod fixe la version minimale ; Go 1.22.0 produit des binaires
+          # que le dyld des macOS récents refuse (LC_UUID manquant).
+          go-version: stable
+          cache-dependency-path: app/go.sum
+      - run: go vet ./...
+      - run: go test ./...

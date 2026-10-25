@@ -1,0 +1,36 @@
+# Publication multi-plateforme : `git tag v0.1.0 && git push --tags` déclenche
+# .github/workflows/release.yml, qui lance GoReleaser.
+# Essai local, sans rien publier : goreleaser release --snapshot --clean
+version: 2
+
+project_name: dvf-tui
+
+before:
+  hooks:
+    - sh -c "cd app && go test ./..."
+
+builds:
+  - id: dvf-tui
+    dir: app
+    binary: dvf-tui
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags: ["-s -w"]
+
+archives:
+  - formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - app/README.md
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
