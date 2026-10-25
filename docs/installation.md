@@ -227,8 +227,35 @@ Les données téléchargées et le cache sont conservés.
 
 ## Désinstaller
 
-Supprimer le binaire, puis, si on veut récupérer la place, les données et le
-cache :
+Le script d'installation sait aussi désinstaller. Il supprime le binaire (et,
+sous Windows, son entrée du `PATH`), affiche la taille des données locales —
+extraits par commune, archives téléchargées, contours — puis **demande s'il
+faut les supprimer**. La réponse par défaut est non.
+
+**Linux et macOS**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh -s -- --uninstall
+```
+
+**Windows** (PowerShell)
+
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1))) -Uninstall
+```
+
+| Option (sh / PowerShell) | Effet |
+|---|---|
+| `--purge` / `-Purge` | supprimer aussi les données et le cache, sans demander |
+| `--keep-data` / `-KeepData` | garder les données et le cache, sans demander |
+
+Sans terminal pour répondre (script, tâche planifiée), la question n'est pas
+posée et les données sont conservées. Si le binaire a été installé ailleurs
+qu'à l'emplacement par défaut, définir `INSTALL_DIR` comme à l'installation ;
+à défaut, le script le cherche dans le `PATH`.
+
+Pour désinstaller à la main : supprimer le binaire, puis, si on veut récupérer
+la place, les données et le cache :
 
 | Système | Données | Cache |
 |---|---|---|
