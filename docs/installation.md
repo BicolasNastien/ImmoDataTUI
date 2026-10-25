@@ -250,7 +250,8 @@ curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/ins
 | `--keep-data` / `-KeepData` | garder les données et le cache, sans demander |
 
 Sans terminal pour répondre (script, tâche planifiée), la question n'est pas
-posée et les données sont conservées. Si le binaire a été installé ailleurs
+posée et les données sont conservées. La désinstallation retire aussi les restes de
+l'ancien nom du programme, `dvf-tui` (binaire et dossiers), s'il en reste. Si le binaire a été installé ailleurs
 qu'à l'emplacement par défaut, définir `INSTALL_DIR` comme à l'installation ;
 à défaut, le script le cherche dans le `PATH`.
 

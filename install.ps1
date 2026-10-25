@@ -22,7 +22,7 @@ $ErrorActionPreference = "Stop"
 $Repo = "BicolasNastien/ImmoDataTUI"
 $Binaire = "immodata"
 $InstallDir = if ($env:INSTALL_DIR) { $env:INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Programs\immodata" }
-$Donnees = Join-Path $env:LOCALAPPDATA "immodata"   # données et cache : os.UserCacheDir vaut %LocalAppData%
+$AncienNom = "dvf-tui"   # nom d'avant ImmoDataTUI : la désinstallation nettoie aussi ses restes
 
 function Installer {
     $arch = switch ($env:PROCESSOR_ARCHITECTURE) {
@@ -81,38 +81,51 @@ function Installer {
 }
 
 function Desinstaller {
-    # Le binaire : là où on l'a demandé, sinon à l'emplacement par défaut,
-    # sinon là où le PATH le trouve.
-    $cible = Join-Path $InstallDir "$Binaire.exe"
-    if (-not $env:INSTALL_DIR -and -not (Test-Path $cible)) {
-        $trouve = Get-Command "$Binaire.exe" -ErrorAction SilentlyContinue
-        if ($trouve) { $cible = $trouve.Source }
-    }
-    if (Test-Path $cible) {
-        Remove-Item $cible -Force
-        Write-Host "Binaire supprimé : $cible"
-        $dossier = Split-Path $cible
-        if (-not (Get-ChildItem $dossier -Force)) { Remove-Item $dossier -Force }
-
-        $path = [Environment]::GetEnvironmentVariable("Path", "User")
-        $entrees = $path -split ";" | Where-Object { $_ -and $_ -ne $dossier }
-        if (($path -split ";") -contains $dossier) {
-            [Environment]::SetEnvironmentVariable("Path", ($entrees -join ";"), "User")
-            Write-Host "$dossier retiré du PATH"
+    $trouve = $false
+    $dossiersDonnees = @()
+    foreach ($nom in @($Binaire, $AncienNom)) {
+        # Le binaire : là où on l'a demandé, sinon à l'emplacement par défaut,
+        # sinon là où le PATH le trouve.
+        $dir = if ($env:INSTALL_DIR) { $env:INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Programs\$nom" }
+        $cible = Join-Path $dir "$nom.exe"
+        if (-not $env:INSTALL_DIR -and -not (Test-Path $cible)) {
+            $cmd = Get-Command "$nom.exe" -ErrorAction SilentlyContinue
+            if ($cmd) { $cible = $cmd.Source }
         }
-    } else {
+        if (Test-Path $cible) {
+            Remove-Item $cible -Force
+            Write-Host "Binaire supprimé : $cible"
+            $trouve = $true
+            $dossier = Split-Path $cible
+            if (-not (Get-ChildItem $dossier -Force)) { Remove-Item $dossier -Force }
+
+            $path = [Environment]::GetEnvironmentVariable("Path", "User")
+            if (($path -split ";") -contains $dossier) {
+                $entrees = $path -split ";" | Where-Object { $_ -and $_ -ne $dossier }
+                [Environment]::SetEnvironmentVariable("Path", ($entrees -join ";"), "User")
+                Write-Host "$dossier retiré du PATH"
+            }
+        }
+
+        # Données et cache : os.UserCacheDir vaut %LocalAppData%.
+        $d = Join-Path $env:LOCALAPPDATA $nom
+        if (Test-Path $d) { $dossiersDonnees += $d }
+    }
+    if (-not $trouve) {
         Write-Host "Aucun binaire $Binaire trouvé (préciser `$env:INSTALL_DIR s'il a été installé ailleurs)."
     }
 
-    if (-not (Test-Path $Donnees)) {
+    if (-not $dossiersDonnees) {
         Write-Host "Aucune donnée locale à supprimer."
         return
     }
 
-    $taille = (Get-ChildItem $Donnees -Recurse -File -Force | Measure-Object Length -Sum).Sum
     Write-Host ""
-    Write-Host ("Données locales (extraits par commune, archives téléchargées, contours) : {0:N1} Mo" -f ($taille / 1MB))
-    Write-Host "  $Donnees"
+    Write-Host "Données locales (extraits par commune, archives téléchargées, contours) :"
+    foreach ($d in $dossiersDonnees) {
+        $taille = (Get-ChildItem $d -Recurse -File -Force | Measure-Object Length -Sum).Sum
+        Write-Host ("  {0,8:N1} Mo  {1}" -f ($taille / 1MB), $d)
+    }
 
     # Sans console interactive (CI, tâche planifiée), on ne pose pas de
     # question : Read-Host attendrait indéfiniment.
@@ -125,8 +138,10 @@ function Desinstaller {
     }
 
     if ($effacer) {
-        Remove-Item $Donnees -Recurse -Force
-        Write-Host "Supprimé : $Donnees"
+        foreach ($d in $dossiersDonnees) {
+            Remove-Item $d -Recurse -Force
+            Write-Host "Supprimé : $d"
+        }
     } else {
         Write-Host "Données conservées. Pour les supprimer plus tard : relancer avec -Uninstall -Purge"
     }

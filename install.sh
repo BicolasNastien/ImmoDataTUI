@@ -17,6 +17,7 @@ set -eu
 
 REPO="BicolasNastien/ImmoDataTUI"
 BINAIRE="immodata"
+ANCIEN_NOM="dvf-tui" # nom d'avant ImmoDataTUI : la désinstallation nettoie aussi ses restes
 INSTALL_DIR_DONNE="${INSTALL_DIR:-}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
@@ -133,25 +134,35 @@ confirmer() {
 desinstaller() {
 	# Le binaire : là où on l'a demandé, sinon à l'emplacement par défaut,
 	# sinon là où le PATH le trouve.
-	if [ -n "$INSTALL_DIR_DONNE" ] || [ -e "$INSTALL_DIR/$BINAIRE" ]; then
-		cible="$INSTALL_DIR/$BINAIRE"
-	else
-		cible=$(command -v "$BINAIRE" 2>/dev/null || true)
-	fi
-	if [ -n "$cible" ] && [ -e "$cible" ]; then
-		rm -f "$cible" 2>/dev/null || erreur "impossible de supprimer $cible (essayer avec sudo)"
-		echo "Binaire supprimé : $cible"
-	else
+	trouve=0
+	for nom in "$BINAIRE" "$ANCIEN_NOM"; do
+		if [ -n "$INSTALL_DIR_DONNE" ] || [ -e "$INSTALL_DIR/$nom" ]; then
+			cible="$INSTALL_DIR/$nom"
+		else
+			cible=$(command -v "$nom" 2>/dev/null || true)
+		fi
+		if [ -n "$cible" ] && [ -e "$cible" ]; then
+			rm -f "$cible" 2>/dev/null || erreur "impossible de supprimer $cible (essayer avec sudo)"
+			echo "Binaire supprimé : $cible"
+			trouve=1
+		fi
+	done
+	if [ "$trouve" = 0 ]; then
 		echo "Aucun binaire $BINAIRE trouvé (préciser INSTALL_DIR s'il a été installé ailleurs)."
 	fi
 
-	if [ "$os" = darwin ]; then
-		dossiers="$HOME/Library/Application Support/immodata
-$HOME/Library/Caches/immodata"
-	else
-		dossiers="${XDG_DATA_HOME:-$HOME/.local/share}/immodata
-${XDG_CACHE_HOME:-$HOME/.cache}/immodata"
-	fi
+	dossiers=""
+	for nom in "$BINAIRE" "$ANCIEN_NOM"; do
+		if [ "$os" = darwin ]; then
+			dossiers="$dossiers$HOME/Library/Application Support/$nom
+$HOME/Library/Caches/$nom
+"
+		else
+			dossiers="$dossiers${XDG_DATA_HOME:-$HOME/.local/share}/$nom
+${XDG_CACHE_HOME:-$HOME/.cache}/$nom
+"
+		fi
+	done
 
 	presents=""
 	anciennes_ifs=$IFS

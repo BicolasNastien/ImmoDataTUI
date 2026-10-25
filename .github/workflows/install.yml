@@ -40,6 +40,8 @@ jobs:
             echo "CACHE=$HOME/.cache/immodata" >> "$GITHUB_ENV"
           fi
       - run: mkdir -p "$DONNEES/data/Pau/2024" "$CACHE/dvf" && echo x > "$CACHE/dvf/64.csv.gz"
+      # Restes de l'ancien nom, que la purge doit aussi effacer.
+      - run: mkdir -p "${CACHE%/immodata}/dvf-tui/dvf" && touch "$RUNNER_TEMP/bin-curl/dvf-tui"
       - run: sh install.sh --uninstall
         env:
           INSTALL_DIR: ${{ runner.temp }}/bin
@@ -48,6 +50,7 @@ jobs:
         env:
           INSTALL_DIR: ${{ runner.temp }}/bin-curl
       - run: test ! -e "$RUNNER_TEMP/bin-curl/immodata" && test ! -e "$DONNEES" && test ! -e "$CACHE"
+      - run: test ! -e "${CACHE%/immodata}/dvf-tui" && test ! -e "$RUNNER_TEMP/bin-curl/dvf-tui"
 
   windows:
     strategy:
@@ -72,6 +75,8 @@ jobs:
       # Désinstallation : sans console interactive, les données sont
       # conservées ; avec -Purge, tout disparaît, entrée du PATH comprise.
       - run: New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\immodata\data\Pau" | Out-Null; Set-Content "$env:LOCALAPPDATA\immodata\x" "x"
+      # Restes de l'ancien nom, que la purge doit aussi effacer.
+      - run: New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\dvf-tui\dvf" | Out-Null; Set-Content "$env:RUNNER_TEMP\bin-irm\dvf-tui.exe" "x"
       - run: ./install.ps1 -Uninstall
         env:
           INSTALL_DIR: ${{ runner.temp }}\bin
@@ -85,4 +90,6 @@ jobs:
       - run: |
           if (Test-Path "$env:RUNNER_TEMP\bin-irm\immodata.exe") { throw "binaire encore présent" }
           if (Test-Path "$env:LOCALAPPDATA\immodata") { throw "données non supprimées" }
+          if (Test-Path "$env:LOCALAPPDATA\dvf-tui") { throw "anciennes données non supprimées" }
+          if (Test-Path "$env:RUNNER_TEMP\bin-irm\dvf-tui.exe") { throw "ancien binaire encore présent" }
           if (([Environment]::GetEnvironmentVariable("Path", "User") -split ";") -contains "$env:RUNNER_TEMP\bin-irm") { throw "PATH non nettoyé" }
