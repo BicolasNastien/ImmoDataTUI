@@ -28,6 +28,27 @@ jobs:
           INSTALL_DIR: ${{ runner.temp }}/bin-curl
       - run: test -x "$RUNNER_TEMP/bin-curl/dvf-tui"
 
+      # Désinstallation : sans terminal, les données sont conservées ; avec
+      # --purge, tout disparaît.
+      - name: données factices
+        run: |
+          if [ "$RUNNER_OS" = macOS ]; then
+            echo "DONNEES=$HOME/Library/Application Support/dvf-tui" >> "$GITHUB_ENV"
+            echo "CACHE=$HOME/Library/Caches/dvf-tui" >> "$GITHUB_ENV"
+          else
+            echo "DONNEES=$HOME/.local/share/dvf-tui" >> "$GITHUB_ENV"
+            echo "CACHE=$HOME/.cache/dvf-tui" >> "$GITHUB_ENV"
+          fi
+      - run: mkdir -p "$DONNEES/data/Pau/2024" "$CACHE/dvf" && echo x > "$CACHE/dvf/64.csv.gz"
+      - run: sh install.sh --uninstall
+        env:
+          INSTALL_DIR: ${{ runner.temp }}/bin
+      - run: test ! -e "$RUNNER_TEMP/bin/dvf-tui" && test -d "$DONNEES" && test -d "$CACHE"
+      - run: curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/install.sh" | sh -s -- --uninstall --purge
+        env:
+          INSTALL_DIR: ${{ runner.temp }}/bin-curl
+      - run: test ! -e "$RUNNER_TEMP/bin-curl/dvf-tui" && test ! -e "$DONNEES" && test ! -e "$CACHE"
+
   windows:
     strategy:
       matrix:
@@ -47,3 +68,21 @@ jobs:
         env:
           INSTALL_DIR: ${{ runner.temp }}\bin-irm
       - run: if (-not (Test-Path "$env:RUNNER_TEMP\bin-irm\dvf-tui.exe")) { exit 1 }
+
+      # Désinstallation : sans console interactive, les données sont
+      # conservées ; avec -Purge, tout disparaît, entrée du PATH comprise.
+      - run: New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\dvf-tui\data\Pau" | Out-Null; Set-Content "$env:LOCALAPPDATA\dvf-tui\x" "x"
+      - run: ./install.ps1 -Uninstall
+        env:
+          INSTALL_DIR: ${{ runner.temp }}\bin
+      - run: |
+          if (Test-Path "$env:RUNNER_TEMP\bin\dvf-tui.exe") { throw "binaire encore présent" }
+          if (-not (Test-Path "$env:LOCALAPPDATA\dvf-tui")) { throw "données supprimées sans --purge" }
+          if (([Environment]::GetEnvironmentVariable("Path", "User") -split ";") -contains "$env:RUNNER_TEMP\bin") { throw "PATH non nettoyé" }
+      - run: '& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/install.ps1"))) -Uninstall -Purge'
+        env:
+          INSTALL_DIR: ${{ runner.temp }}\bin-irm
+      - run: |
+          if (Test-Path "$env:RUNNER_TEMP\bin-irm\dvf-tui.exe") { throw "binaire encore présent" }
+          if (Test-Path "$env:LOCALAPPDATA\dvf-tui") { throw "données non supprimées" }
+          if (([Environment]::GetEnvironmentVariable("Path", "User") -split ";") -contains "$env:RUNNER_TEMP\bin-irm") { throw "PATH non nettoyé" }

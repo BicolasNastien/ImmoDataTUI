@@ -1,15 +1,23 @@
 #!/bin/sh
-# Installe dvf-tui depuis les releases GitHub, sous Linux et macOS.
+# Installe ou désinstalle dvf-tui depuis les releases GitHub, sous Linux et macOS.
 #
 #   curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh -s -- --uninstall
+#
+# Options :
+#   --uninstall             supprimer le binaire, puis demander s'il faut
+#                           supprimer aussi les données et le cache
+#   --purge                 avec --uninstall : tout supprimer sans demander
+#   --keep-data             avec --uninstall : garder données et cache sans demander
 #
 # Variables facultatives :
 #   VERSION=0.1.0           version à installer (défaut : la dernière)
-#   INSTALL_DIR=/chemin     dossier de destination (défaut : ~/.local/bin)
+#   INSTALL_DIR=/chemin     dossier du binaire (défaut : ~/.local/bin)
 set -eu
 
 REPO="BicolasNastien/ImmoDataTUI"
 BINAIRE="dvf-tui"
+INSTALL_DIR_DONNE="${INSTALL_DIR:-}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
 erreur() {
@@ -21,6 +29,22 @@ erreur() {
 # `curl | sh` est interrompu en cours de route, le shell ne reçoit qu'une
 # définition incomplète et n'exécute rien.
 main() {
+	mode=installer
+	donnees=demander
+	for arg in "$@"; do
+		case "$arg" in
+		--uninstall) mode=desinstaller ;;
+		--purge) donnees=supprimer ;;
+		--keep-data) donnees=garder ;;
+		-h | --help)
+			echo "Usage : install.sh [--uninstall [--purge | --keep-data]]"
+			echo "Variables : VERSION=x.y.z, INSTALL_DIR=/chemin"
+			return
+			;;
+		*) erreur "option inconnue : $arg" ;;
+		esac
+	done
+
 	case "$(uname -s)" in
 	Linux) os=linux ;;
 	Darwin) os=darwin ;;
@@ -32,6 +56,11 @@ main() {
 	aarch64 | arm64) arch=arm64 ;;
 	*) erreur "processeur non pris en charge : $(uname -m)" ;;
 	esac
+
+	if [ "$mode" = desinstaller ]; then
+		desinstaller
+		return
+	fi
 
 	command -v curl >/dev/null 2>&1 || erreur "curl est nécessaire"
 	command -v tar >/dev/null 2>&1 || erreur "tar est nécessaire"
@@ -86,6 +115,82 @@ main() {
 		echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
 		;;
 	esac
+}
+
+# confirmer pose une question au terminal et réussit sur « oui ». Avec
+# `curl | sh`, l'entrée standard est le script lui-même : il faut lire
+# /dev/tty. Sans terminal (CI, cron), la réponse est « non ».
+confirmer() {
+	(: </dev/tty) 2>/dev/null || return 1
+	printf '%s [o/N] ' "$1" >/dev/tty
+	read -r reponse </dev/tty || return 1
+	case "$reponse" in
+	o | O | oui | Oui | y | Y | yes) return 0 ;;
+	esac
+	return 1
+}
+
+desinstaller() {
+	# Le binaire : là où on l'a demandé, sinon à l'emplacement par défaut,
+	# sinon là où le PATH le trouve.
+	if [ -n "$INSTALL_DIR_DONNE" ] || [ -e "$INSTALL_DIR/$BINAIRE" ]; then
+		cible="$INSTALL_DIR/$BINAIRE"
+	else
+		cible=$(command -v "$BINAIRE" 2>/dev/null || true)
+	fi
+	if [ -n "$cible" ] && [ -e "$cible" ]; then
+		rm -f "$cible" 2>/dev/null || erreur "impossible de supprimer $cible (essayer avec sudo)"
+		echo "Binaire supprimé : $cible"
+	else
+		echo "Aucun binaire $BINAIRE trouvé (préciser INSTALL_DIR s'il a été installé ailleurs)."
+	fi
+
+	if [ "$os" = darwin ]; then
+		dossiers="$HOME/Library/Application Support/dvf-tui
+$HOME/Library/Caches/dvf-tui"
+	else
+		dossiers="${XDG_DATA_HOME:-$HOME/.local/share}/dvf-tui
+${XDG_CACHE_HOME:-$HOME/.cache}/dvf-tui"
+	fi
+
+	presents=""
+	anciennes_ifs=$IFS
+	IFS='
+'
+	for d in $dossiers; do
+		[ -d "$d" ] && presents="$presents$d
+"
+	done
+	if [ -z "$presents" ]; then
+		IFS=$anciennes_ifs
+		echo "Aucune donnée locale à supprimer."
+		return
+	fi
+
+	echo
+	echo "Données locales (extraits par commune, archives téléchargées, contours) :"
+	for d in $presents; do
+		echo "  $(du -sh "$d" 2>/dev/null | cut -f1)	$d"
+	done
+
+	case "$donnees" in
+	supprimer) effacer=1 ;;
+	garder) effacer=0 ;;
+	*) if confirmer "Supprimer aussi ces données ?"; then effacer=1; else effacer=0; fi ;;
+	esac
+
+	if [ "$effacer" = 1 ]; then
+		for d in $presents; do
+			rm -rf "$d"
+			echo "Supprimé : $d"
+		done
+	else
+		echo "Données conservées. Pour les supprimer plus tard : relancer avec --uninstall --purge"
+	fi
+	IFS=$anciennes_ifs
+
+	echo
+	echo "Un dossier data/ créé là où vous lanciez $BINAIRE n'est pas concerné : le supprimer à la main s'il existe."
 }
 
 main "$@"
