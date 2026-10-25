@@ -27,7 +27,8 @@ archives:
         formats: [zip]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
-      - app/README.md
+      - README.md
+      - docs/*.md
 
 checksum:
   name_template: checksums.txt
