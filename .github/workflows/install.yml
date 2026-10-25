@@ -1,0 +1,39 @@
+name: install
+
+# Vérifie que les scripts d'installation fonctionnent contre la dernière
+# release publiée, sur chaque système.
+on:
+  push:
+    branches: [main]
+    paths: [install.sh, install.ps1, .github/workflows/install.yml]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: sh install.sh
+        env:
+          INSTALL_DIR: ${{ runner.temp }}/bin
+      - run: test -x "$RUNNER_TEMP/bin/dvf-tui"
+
+  windows:
+    strategy:
+      matrix:
+        shell: [powershell, pwsh]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./install.ps1
+        env:
+          INSTALL_DIR: ${{ runner.temp }}\bin
+      - run: if (-not (Test-Path "$env:RUNNER_TEMP\bin\dvf-tui.exe")) { exit 1 }
