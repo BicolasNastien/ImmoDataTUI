@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Génère les contours embarqués (régions et départements) de dvf-tui.
+"""Génère les contours embarqués (régions et départements) d'ImmoDataTUI.
 
 Sources :
   - métropole : github.com/gregoiredavid/france-geojson (regions/departements)
@@ -39,7 +39,7 @@ DECIMALES = 4
 
 
 def telecharger(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "dvf-tui/geodata"})
+    req = urllib.request.Request(url, headers={"User-Agent": "immodata/geodata"})
     with urllib.request.urlopen(req, timeout=120) as r:
         return json.load(r)
 

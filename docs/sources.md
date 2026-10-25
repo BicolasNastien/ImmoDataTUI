@@ -1,6 +1,6 @@
 # Sources de données
 
-dvf-tui n'a pas de serveur à lui : il interroge directement des sources
+ImmoDataTUI n'a pas de serveur à lui : il interroge directement des sources
 publiques, et ne garde qu'un cache local. Cette page dit d'où vient chaque
 chiffre, à quelle fréquence il est récupéré, et où il est stocké.
 
@@ -148,16 +148,16 @@ commune).
 
 Dans l'ordre de priorité :
 
-1. le dossier passé en argument : `dvf-tui ~/immo` ;
+1. le dossier passé en argument : `immodata ~/immo` ;
 2. un dossier `data/` présent dans le répertoire depuis lequel on lance le
    programme ;
 3. sinon, le dossier standard du système :
 
 | Système | Dossier de données |
 |---|---|
-| Linux | `$XDG_DATA_HOME/dvf-tui/data`, à défaut `~/.local/share/dvf-tui/data` |
-| macOS | `~/Library/Application Support/dvf-tui/data` |
-| Windows | `%LocalAppData%\dvf-tui\data` |
+| Linux | `$XDG_DATA_HOME/immodata/data`, à défaut `~/.local/share/immodata/data` |
+| macOS | `~/Library/Application Support/immodata/data` |
+| Windows | `%LocalAppData%\immodata\data` |
 
 On y trouve un dossier par commune : `<Commune>/<année>/<code INSEE>.csv`.
 
@@ -165,9 +165,9 @@ On y trouve un dossier par commune : `<Commune>/<année>/<code INSEE>.csv`.
 
 | Système | Cache |
 |---|---|
-| Linux | `$XDG_CACHE_HOME/dvf-tui`, à défaut `~/.cache/dvf-tui` |
-| macOS | `~/Library/Caches/dvf-tui` |
-| Windows | `%LocalAppData%\dvf-tui` |
+| Linux | `$XDG_CACHE_HOME/immodata`, à défaut `~/.cache/immodata` |
+| macOS | `~/Library/Caches/immodata` |
+| Windows | `%LocalAppData%\immodata` |
 
 | Contenu | Chemin dans le cache |
 |---|---|
@@ -205,10 +205,10 @@ ventes y apparaissent donc avec plusieurs mois de retard.
   [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
   Leurs conditions générales d'utilisation interdisent en outre toute
   **réidentification des personnes** concernées par les ventes et toute
-  indexation des données par les moteurs de recherche. dvf-tui ne fait que
+  indexation des données par les moteurs de recherche. ImmoDataTUI ne fait que
   lire et agréger les données localement ; ce qu'on en fait ensuite relève de
   l'utilisateur.
 - La **Base Adresse Nationale** et le **Découpage administratif** sont des
   données publiques ouvertes, diffusées sur `data.gouv.fr`.
 - Les **annonces Bien'ici** restent la propriété de leurs auteurs et du
-  portail ; dvf-tui les affiche le temps d'une consultation, sans les stocker.
+  portail ; ImmoDataTUI les affiche le temps d'une consultation, sans les stocker.

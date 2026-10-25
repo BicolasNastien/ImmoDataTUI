@@ -1,7 +1,7 @@
 # Installation
 
-dvf-tui est un programme unique, sans dépendance : on télécharge l'archive de
-son système, on l'extrait, on lance `dvf-tui` dans un terminal. Rien d'autre à
+ImmoDataTUI est un programme unique, sans dépendance : on télécharge l'archive de
+son système, on l'extrait, on lance `immodata` dans un terminal. Rien d'autre à
 installer.
 
 - [Installation rapide](#installation-rapide)
@@ -25,24 +25,24 @@ vérifie sa somme de contrôle et installe le binaire.
 curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh
 ```
 
-**Windows** — dans PowerShell, installe dans `%LocalAppData%\Programs\dvf-tui`
+**Windows** — dans PowerShell, installe dans `%LocalAppData%\Programs\immodata`
 et l'ajoute au `PATH` :
 
 ```powershell
 irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
 ```
 
-Puis, dans un nouveau terminal : `dvf-tui`.
+Puis, dans un nouveau terminal : `immodata`.
 
 Deux variables permettent d'ajuster l'installation :
 
 | Variable | Effet | Exemple |
 |---|---|---|
-| `VERSION` | installer une version précise plutôt que la dernière | `VERSION=0.1.0` |
+| `VERSION` | installer une version précise plutôt que la dernière | `VERSION=0.2.0` |
 | `INSTALL_DIR` | changer le dossier de destination | `INSTALL_DIR=/usr/local/bin` |
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | VERSION=0.1.0 sh
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | VERSION=0.2.0 sh
 curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sudo INSTALL_DIR=/usr/local/bin sh
 ```
 
@@ -61,12 +61,12 @@ Les archives sont publiées sur la page
 
 | Système | Processeur | Archive |
 |---|---|---|
-| Linux | Intel / AMD 64 bits | `dvf-tui_<version>_linux_amd64.tar.gz` |
-| Linux | ARM 64 bits (Raspberry Pi 4/5, serveurs ARM) | `dvf-tui_<version>_linux_arm64.tar.gz` |
-| macOS | Apple Silicon (M1 et suivants) | `dvf-tui_<version>_darwin_arm64.tar.gz` |
-| macOS | Intel | `dvf-tui_<version>_darwin_amd64.tar.gz` |
-| Windows | Intel / AMD 64 bits | `dvf-tui_<version>_windows_amd64.zip` |
-| Windows | ARM (Surface Pro X, Snapdragon) | `dvf-tui_<version>_windows_arm64.zip` |
+| Linux | Intel / AMD 64 bits | `immodata_<version>_linux_amd64.tar.gz` |
+| Linux | ARM 64 bits (Raspberry Pi 4/5, serveurs ARM) | `immodata_<version>_linux_arm64.tar.gz` |
+| macOS | Apple Silicon (M1 et suivants) | `immodata_<version>_darwin_arm64.tar.gz` |
+| macOS | Intel | `immodata_<version>_darwin_amd64.tar.gz` |
+| Windows | Intel / AMD 64 bits | `immodata_<version>_windows_amd64.zip` |
+| Windows | ARM (Surface Pro X, Snapdragon) | `immodata_<version>_windows_arm64.zip` |
 
 En cas de doute sur le processeur : `uname -m` sous Linux et macOS (`x86_64` →
 amd64, `aarch64` ou `arm64` → arm64) ; sous Windows, *Paramètres → Système →
@@ -91,26 +91,26 @@ ci-dessous.
 ## Linux
 
 ```bash
-VERSION=0.1.0
+VERSION=0.2.0
 ARCH=amd64          # ou arm64
 cd /tmp
-curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/dvf-tui_${VERSION}_linux_${ARCH}.tar.gz"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/immodata_${VERSION}_linux_${ARCH}.tar.gz"
 curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/checksums.txt"
 sha256sum -c checksums.txt --ignore-missing
 
-tar -xzf "dvf-tui_${VERSION}_linux_${ARCH}.tar.gz"
+tar -xzf "immodata_${VERSION}_linux_${ARCH}.tar.gz"
 mkdir -p ~/.local/bin
-mv dvf-tui ~/.local/bin/
+mv immodata ~/.local/bin/
 ```
 
 Vérifier que `~/.local/bin` est dans le `PATH` (`echo $PATH`) ; sinon, ajouter
 `export PATH="$HOME/.local/bin:$PATH"` au `~/.bashrc` ou `~/.zshrc`. Pour une
-installation pour tous les utilisateurs : `sudo mv dvf-tui /usr/local/bin/`.
+installation pour tous les utilisateurs : `sudo mv immodata /usr/local/bin/`.
 
 Puis lancer :
 
 ```bash
-dvf-tui
+immodata
 ```
 
 **Terminaux recommandés** : tous les terminaux courants conviennent (GNOME
@@ -125,19 +125,19 @@ installation de bureau). Sur un serveur ou via SSH, le lien complet est affiché
 ## macOS
 
 ```bash
-VERSION=0.1.0
+VERSION=0.2.0
 ARCH=arm64          # Apple Silicon ; amd64 pour un Mac Intel
 cd /tmp
-curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/dvf-tui_${VERSION}_darwin_${ARCH}.tar.gz"
+curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/immodata_${VERSION}_darwin_${ARCH}.tar.gz"
 curl -LO "https://github.com/BicolasNastien/ImmoDataTUI/releases/download/v${VERSION}/checksums.txt"
 shasum -a 256 -c checksums.txt --ignore-missing
 
-tar -xzf "dvf-tui_${VERSION}_darwin_${ARCH}.tar.gz"
+tar -xzf "immodata_${VERSION}_darwin_${ARCH}.tar.gz"
 sudo mkdir -p /usr/local/bin
-sudo mv dvf-tui /usr/local/bin/
+sudo mv immodata /usr/local/bin/
 ```
 
-Puis lancer `dvf-tui` dans Terminal.
+Puis lancer `immodata` dans Terminal.
 
 **Gatekeeper.** Le binaire n'est pas signé par Apple. Téléchargé avec `curl`
 comme ci-dessus, il se lance directement. Téléchargé avec un navigateur, il est
@@ -145,7 +145,7 @@ mis en quarantaine et macOS affiche « impossible de vérifier le développeur �
 Pour le débloquer :
 
 ```bash
-xattr -d com.apple.quarantine /usr/local/bin/dvf-tui
+xattr -d com.apple.quarantine /usr/local/bin/immodata
 ```
 
 ou, à la première ouverture refusée : *Réglages Système → Confidentialité et
@@ -160,28 +160,28 @@ Les liens s'ouvrent dans le navigateur par défaut via la commande `open`.
 
 ## Windows
 
-1. Télécharger `dvf-tui_<version>_windows_amd64.zip` (ou `arm64`) depuis la
+1. Télécharger `immodata_<version>_windows_amd64.zip` (ou `arm64`) depuis la
    page [Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest).
-2. *Clic droit → Extraire tout…*, puis déplacer `dvf-tui.exe` dans un dossier
-   stable, par exemple `%LocalAppData%\Programs\dvf-tui\`.
-3. Ajouter ce dossier au `PATH` pour pouvoir lancer `dvf-tui` de n'importe où.
+2. *Clic droit → Extraire tout…*, puis déplacer `immodata.exe` dans un dossier
+   stable, par exemple `%LocalAppData%\Programs\immodata\`.
+3. Ajouter ce dossier au `PATH` pour pouvoir lancer `immodata` de n'importe où.
    Dans PowerShell :
 
    ```powershell
-   $dir = "$env:LOCALAPPDATA\Programs\dvf-tui"
+   $dir = "$env:LOCALAPPDATA\Programs\immodata"
    New-Item -ItemType Directory -Force $dir | Out-Null
-   Move-Item .\dvf-tui.exe $dir
+   Move-Item .\immodata.exe $dir
    [Environment]::SetEnvironmentVariable("Path", [Environment]::GetEnvironmentVariable("Path", "User") + ";$dir", "User")
    ```
 
    Fermer et rouvrir le terminal pour que le `PATH` soit pris en compte.
-4. Ouvrir **Windows Terminal** et taper `dvf-tui`.
+4. Ouvrir **Windows Terminal** et taper `immodata`.
 
 Vérifier l'archive (facultatif), dans PowerShell, puis comparer à la ligne
 correspondante de `checksums.txt` :
 
 ```powershell
-Get-FileHash .\dvf-tui_0.1.0_windows_amd64.zip -Algorithm SHA256
+Get-FileHash .\immodata_0.2.0_windows_amd64.zip -Algorithm SHA256
 ```
 
 **Utiliser Windows Terminal.** Il est installé d'office sur Windows 11 ; sous
@@ -205,15 +205,15 @@ les versions récentes de macOS.
 ```bash
 git clone https://github.com/BicolasNastien/ImmoDataTUI.git
 cd ImmoDataTUI/app
-go build -o dvf-tui .       # dvf-tui.exe sous Windows
-./dvf-tui
+go build -o immodata .       # immodata.exe sous Windows
+./immodata
 ```
 
 La compilation croisée ne demande rien de plus, par exemple pour un Mac Apple
 Silicon depuis Linux :
 
 ```bash
-CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o dvf-tui .
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o immodata .
 ```
 
 Les tests : `go test ./...` (ajouter `-short` pour sauter ceux qui sollicitent le
@@ -259,9 +259,9 @@ la place, les données et le cache :
 
 | Système | Données | Cache |
 |---|---|---|
-| Linux | `~/.local/share/dvf-tui` (ou `$XDG_DATA_HOME/dvf-tui`) | `~/.cache/dvf-tui` (ou `$XDG_CACHE_HOME/dvf-tui`) |
-| macOS | `~/Library/Application Support/dvf-tui` | `~/Library/Caches/dvf-tui` |
-| Windows | `%LocalAppData%\dvf-tui` (données et cache sont dans le même dossier) | |
+| Linux | `~/.local/share/immodata` (ou `$XDG_DATA_HOME/immodata`) | `~/.cache/immodata` (ou `$XDG_CACHE_HOME/immodata`) |
+| macOS | `~/Library/Application Support/immodata` | `~/Library/Caches/immodata` |
+| Windows | `%LocalAppData%\immodata` (données et cache sont dans le même dossier) | |
 
 Si le programme a été lancé depuis un dossier contenant un sous-dossier `data/`,
 les données sont dans ce `data/` (voir [Emplacements](sources.md#emplacements)).
@@ -276,6 +276,6 @@ les données sont dans ce `data/` (voir [Emplacements](sources.md#emplacements))
 | « Impossible d'ouvrir le navigateur » | pas d'environnement graphique (SSH, serveur) | copier le lien affiché |
 | Téléchargements en échec | pas de réseau, proxy, pare-feu | vérifier l'accès à `files.data.gouv.fr` ; définir `HTTPS_PROXY` si besoin |
 | Un département n'a aucune donnée | Moselle, Bas-Rhin, Haut-Rhin, Mayotte | ces départements ne sont pas couverts par DVF (voir [Sources](sources.md#couverture)) |
-| macOS : « impossible de vérifier le développeur » | quarantaine Gatekeeper | `xattr -d com.apple.quarantine dvf-tui` |
+| macOS : « impossible de vérifier le développeur » | quarantaine Gatekeeper | `xattr -d com.apple.quarantine immodata` |
 | macOS : `dyld … missing LC_UUID` | binaire compilé avec Go 1.22.0 | utiliser une release récente, ou recompiler avec la dernière version de Go |
 | Windows : « Windows a protégé votre ordinateur » | SmartScreen, binaire non signé | *Informations complémentaires → Exécuter quand même* |

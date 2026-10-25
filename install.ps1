@@ -1,4 +1,4 @@
-# Installe ou désinstalle dvf-tui depuis les releases GitHub, sous Windows.
+# Installe ou désinstalle ImmoDataTUI depuis les releases GitHub, sous Windows.
 #
 #   irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
 #   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1))) -Uninstall
@@ -10,8 +10,8 @@
 #   -KeepData    avec -Uninstall : garder données et cache sans demander
 #
 # Variables facultatives (à définir avant la commande) :
-#   $env:VERSION = "0.1.0"          version à installer (défaut : la dernière)
-#   $env:INSTALL_DIR = "C:\outils"  dossier du binaire (défaut : %LocalAppData%\Programs\dvf-tui)
+#   $env:VERSION = "0.2.0"          version à installer (défaut : la dernière)
+#   $env:INSTALL_DIR = "C:\outils"  dossier du binaire (défaut : %LocalAppData%\Programs\immodata)
 param(
     [switch]$Uninstall,
     [switch]$Purge,
@@ -20,9 +20,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 $Repo = "BicolasNastien/ImmoDataTUI"
-$Binaire = "dvf-tui"
-$InstallDir = if ($env:INSTALL_DIR) { $env:INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Programs\dvf-tui" }
-$Donnees = Join-Path $env:LOCALAPPDATA "dvf-tui"   # données et cache : os.UserCacheDir vaut %LocalAppData%
+$Binaire = "immodata"
+$InstallDir = if ($env:INSTALL_DIR) { $env:INSTALL_DIR } else { Join-Path $env:LOCALAPPDATA "Programs\immodata" }
+$Donnees = Join-Path $env:LOCALAPPDATA "immodata"   # données et cache : os.UserCacheDir vaut %LocalAppData%
 
 function Installer {
     $arch = switch ($env:PROCESSOR_ARCHITECTURE) {

@@ -15,8 +15,8 @@
 ## Lancer le programme
 
 ```bash
-dvf-tui              # données rangées dans le dossier par défaut du système
-dvf-tui ~/immo       # ou dans le dossier indiqué
+immodata              # données rangées dans le dossier par défaut du système
+immodata ~/immo       # ou dans le dossier indiqué
 ```
 
 Le dossier passé en argument reçoit les extraits par commune. Sans argument,

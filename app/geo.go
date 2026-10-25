@@ -251,7 +251,7 @@ func cheminCache(elements ...string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("répertoire de cache introuvable : %w", err)
 	}
-	chemin := filepath.Join(append([]string{base, "dvf-tui"}, elements...)...)
+	chemin := filepath.Join(append([]string{base, "immodata"}, elements...)...)
 	if err := os.MkdirAll(filepath.Dir(chemin), 0o755); err != nil {
 		return "", fmt.Errorf("création du cache : %w", err)
 	}

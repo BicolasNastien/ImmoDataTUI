@@ -1,4 +1,4 @@
-# dvf-tui
+# ImmoDataTUI
 
 Explorer les ventes immobilières françaises depuis le terminal, pour **décider
 d'un achat** : ce qui s'est vendu, à quel prix, dans quelle rue — et ce qui est
@@ -6,7 +6,7 @@ d'un achat** : ce qui s'est vendu, à quel prix, dans quelle rue — et ce qui e
 
 Les données sont celles de **DVF** (Demandes de valeurs foncières), publiées
 par la DGFiP : toutes les ventes immobilières de France depuis six ans, avec
-leur prix, leurs surfaces et leur parcelle. dvf-tui les télécharge à la
+leur prix, leurs surfaces et leur parcelle. ImmoDataTUI les télécharge à la
 demande et les met en cache.
 
 ```
@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/ins
 irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
 ```
 
-Puis lancer `dvf-tui` dans un nouveau terminal. Les archives sont aussi
+Puis lancer `immodata` dans un nouveau terminal. Les archives sont aussi
 téléchargeables à la main sur la page
 [Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest)
 (Linux, macOS, Windows ; processeurs Intel/AMD et ARM).

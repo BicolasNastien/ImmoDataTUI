@@ -58,7 +58,7 @@ var clientBienici = &http.Client{Timeout: 30 * time.Second}
 
 // entetesBienici : un User-Agent identifiable est la politesse minimale, et
 // beaucoup de serveurs refusent l'absence d'en-tête plutôt que sa valeur.
-const uaBienici = "dvf-tui (+https://github.com/) Go-http-client"
+const uaBienici = "immodata (+https://github.com/BicolasNastien/ImmoDataTUI) Go-http-client"
 
 type sourceBienici struct{}
 

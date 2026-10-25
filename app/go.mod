@@ -1,4 +1,4 @@
-module dvftui
+module immodata
 
 go 1.22
 

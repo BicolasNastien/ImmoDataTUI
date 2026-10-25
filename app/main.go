@@ -1,4 +1,4 @@
-// dvf-tui — exploration des données DVF (Demandes de Valeurs Foncières)
+// ImmoDataTUI — exploration des données DVF (Demandes de Valeurs Foncières)
 //
 // Les données sont récupérées à la demande depuis files.data.gouv.fr : on
 // choisit une région sur la carte de France, puis un département, dont les
@@ -15,7 +15,7 @@
 //
 // Usage :
 //
-//	dvf-tui [racine]      (défaut : voir racineParDefaut)
+//	immodata [racine]      (défaut : voir racineParDefaut)
 package main
 
 import (
@@ -97,5 +97,5 @@ func racineParDefaut() (string, error) {
 			base = filepath.Join(home, ".local", "share")
 		}
 	}
-	return filepath.Join(base, "dvf-tui", "data"), nil
+	return filepath.Join(base, "immodata", "data"), nil
 }

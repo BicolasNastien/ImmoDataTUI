@@ -1,5 +1,5 @@
 #!/bin/sh
-# Installe ou désinstalle dvf-tui depuis les releases GitHub, sous Linux et macOS.
+# Installe ou désinstalle ImmoDataTUI depuis les releases GitHub, sous Linux et macOS.
 #
 #   curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh
 #   curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh -s -- --uninstall
@@ -11,12 +11,12 @@
 #   --keep-data             avec --uninstall : garder données et cache sans demander
 #
 # Variables facultatives :
-#   VERSION=0.1.0           version à installer (défaut : la dernière)
+#   VERSION=0.2.0           version à installer (défaut : la dernière)
 #   INSTALL_DIR=/chemin     dossier du binaire (défaut : ~/.local/bin)
 set -eu
 
 REPO="BicolasNastien/ImmoDataTUI"
-BINAIRE="dvf-tui"
+BINAIRE="immodata"
 INSTALL_DIR_DONNE="${INSTALL_DIR:-}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
@@ -146,11 +146,11 @@ desinstaller() {
 	fi
 
 	if [ "$os" = darwin ]; then
-		dossiers="$HOME/Library/Application Support/dvf-tui
-$HOME/Library/Caches/dvf-tui"
+		dossiers="$HOME/Library/Application Support/immodata
+$HOME/Library/Caches/immodata"
 	else
-		dossiers="${XDG_DATA_HOME:-$HOME/.local/share}/dvf-tui
-${XDG_CACHE_HOME:-$HOME/.cache}/dvf-tui"
+		dossiers="${XDG_DATA_HOME:-$HOME/.local/share}/immodata
+${XDG_CACHE_HOME:-$HOME/.cache}/immodata"
 	fi
 
 	presents=""

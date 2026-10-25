@@ -3,16 +3,16 @@
 # Essai local, sans rien publier : goreleaser release --snapshot --clean
 version: 2
 
-project_name: dvf-tui
+project_name: immodata
 
 before:
   hooks:
     - sh -c "cd app && go test ./..."
 
 builds:
-  - id: dvf-tui
+  - id: immodata
     dir: app
-    binary: dvf-tui
+    binary: immodata
     env:
       - CGO_ENABLED=0
     goos: [linux, darwin, windows]
