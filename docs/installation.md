@@ -4,6 +4,7 @@ dvf-tui est un programme unique, sans dépendance : on télécharge l'archive de
 son système, on l'extrait, on lance `dvf-tui` dans un terminal. Rien d'autre à
 installer.
 
+- [Installation rapide](#installation-rapide)
 - [Choisir son archive](#choisir-son-archive)
 - [Linux](#linux)
 - [macOS](#macos)
@@ -12,6 +13,46 @@ installer.
 - [Mettre à jour](#mettre-à-jour)
 - [Désinstaller](#désinstaller)
 - [Dépannage](#dépannage)
+
+## Installation rapide
+
+Un script détecte le système et le processeur, télécharge la dernière release,
+vérifie sa somme de contrôle et installe le binaire.
+
+**Linux et macOS** — installe dans `~/.local/bin` :
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh
+```
+
+**Windows** — dans PowerShell, installe dans `%LocalAppData%\Programs\dvf-tui`
+et l'ajoute au `PATH` :
+
+```powershell
+irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
+```
+
+Puis, dans un nouveau terminal : `dvf-tui`.
+
+Deux variables permettent d'ajuster l'installation :
+
+| Variable | Effet | Exemple |
+|---|---|---|
+| `VERSION` | installer une version précise plutôt que la dernière | `VERSION=0.1.0` |
+| `INSTALL_DIR` | changer le dossier de destination | `INSTALL_DIR=/usr/local/bin` |
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | VERSION=0.1.0 sh
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sudo INSTALL_DIR=/usr/local/bin sh
+```
+
+```powershell
+$env:INSTALL_DIR = "C:\outils"; irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
+```
+
+Exécuter un script téléchargé revient à faire confiance à son auteur : on peut
+lire [`install.sh`](../install.sh) et [`install.ps1`](../install.ps1) avant de
+les lancer, ou suivre l'installation manuelle ci-dessous.
 
 ## Choisir son archive
 
@@ -180,7 +221,8 @@ réseau).
 
 ## Mettre à jour
 
-Refaire l'installation avec la nouvelle version : le binaire remplace l'ancien.
+Relancer le script d'installation, ou refaire l'installation manuelle avec la
+nouvelle version : le binaire remplace l'ancien.
 Les données téléchargées et le cache sont conservés.
 
 ## Désinstaller

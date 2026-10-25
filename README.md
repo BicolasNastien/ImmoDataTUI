@@ -33,12 +33,25 @@ carte de France ──▶ région ──▶ département ──▶ commune ─�
 
 ## Installation
 
-Télécharger l'archive de son système sur la page
-[Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest),
-l'extraire et lancer `dvf-tui` dans un terminal. Disponible pour Linux, macOS
-et Windows (processeurs Intel/AMD et ARM).
+**Linux et macOS**
 
-Pas à pas pour chaque système, et compilation depuis les sources :
+```bash
+curl -fsSL https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.sh | sh
+```
+
+**Windows** (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/BicolasNastien/ImmoDataTUI/main/install.ps1 | iex
+```
+
+Puis lancer `dvf-tui` dans un nouveau terminal. Les archives sont aussi
+téléchargeables à la main sur la page
+[Releases](https://github.com/BicolasNastien/ImmoDataTUI/releases/latest)
+(Linux, macOS, Windows ; processeurs Intel/AMD et ARM).
+
+Options des scripts, installation manuelle pas à pas et compilation depuis les
+sources :
 **[docs/installation.md](docs/installation.md)**.
 
 ## Documentation
