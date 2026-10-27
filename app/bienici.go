@@ -447,6 +447,7 @@ type annonceBienici struct {
 	Neuf           bool          `json:"newProperty"`
 	ParPro         bool          `json:"adCreatedByPro"`
 	Publiee        string        `json:"publicationDate"`
+	SeuilPubliee   string        `json:"thresholdDate"` // présent quand la date est masquée
 	PrixNetVendeur nombreBienici `json:"priceWithoutFees"`
 	Honoraires     string        `json:"feesChargedTo"` // "purchaser" ou "seller"
 	TypeAnnonce    string        `json:"adType"`        // "buy", "lifeAnnuitySale"…
@@ -485,8 +486,14 @@ func (a annonceBienici) versAnnonce(source string) Annonce {
 	if a.Honoraires == "purchaser" && a.PrixNetVendeur.f() > 0 {
 		out.PrixActe = a.PrixNetVendeur.f()
 	}
-	if t, err := time.Parse(time.RFC3339, a.Publiee); err == nil {
+	// Au-delà de deux mois, Bien'ici ne dit plus quand l'annonce a été
+	// publiée : publicationDate vaut le 1er janvier 1970, et thresholdDate
+	// (aujourd'hui moins soixante jours) borne la vraie date. Afficher 1970
+	// serait faux ; afficher « avant le » est tout ce qu'on sait.
+	if t, err := time.Parse(time.RFC3339, a.Publiee); err == nil && t.Year() > 1970 {
 		out.Publiee = t
+	} else if t, err := time.Parse(time.RFC3339, a.SeuilPubliee); err == nil {
+		out.PublieeAvant = t
 	}
 	return out
 }

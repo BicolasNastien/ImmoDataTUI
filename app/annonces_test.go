@@ -7,6 +7,7 @@ import (
 	"math"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestDistanceKm(t *testing.T) {
@@ -118,6 +119,50 @@ func TestFiltrerAnnoncesDeduplique(t *testing.T) {
 	}
 	if got := FiltrerAnnonces(as, Criteres{}); len(got) != 2 {
 		t.Errorf("%d annonces après déduplication, attendu 2", len(got))
+	}
+}
+
+// Une date masquée par le portail est antérieure à son seuil : elle doit
+// passer après toutes les annonces datées en tri décroissant, avant en tri
+// croissant, et jamais être traitée comme une valeur absente.
+func TestTrierAnnoncesDateMasquee(t *testing.T) {
+	seuil := time.Date(2026, 8, 28, 0, 0, 0, 0, time.UTC)
+	as := []Annonce{
+		{ID: "masquee", PublieeAvant: seuil},
+		{ID: "ancienne", Publiee: seuil.Add(24 * time.Hour)},
+		{ID: "inconnue"},
+		{ID: "recente", Publiee: seuil.Add(50 * 24 * time.Hour)},
+	}
+	ids := func() string {
+		var out []string
+		for _, a := range as {
+			out = append(out, a.ID)
+		}
+		return strings.Join(out, " ")
+	}
+	TrierAnnonces(as, TriAnnonces{Critere: TriADate, Decroissant: true})
+	if got := ids(); got != "recente ancienne masquee inconnue" {
+		t.Errorf("décroissant : %s", got)
+	}
+	TrierAnnonces(as, TriAnnonces{Critere: TriADate})
+	if got := ids(); got != "masquee ancienne recente inconnue" {
+		t.Errorf("croissant : %s", got)
+	}
+}
+
+func TestLibellePublication(t *testing.T) {
+	jour := time.Date(2026, 10, 12, 8, 0, 0, 0, time.UTC)
+	for _, c := range []struct {
+		a    Annonce
+		want string
+	}{
+		{Annonce{Publiee: jour}, "12/10/26"},
+		{Annonce{PublieeAvant: jour}, "<12/10/26"},
+		{Annonce{}, "–"},
+	} {
+		if got := c.a.LibellePublication(); got != c.want {
+			t.Errorf("%+v → %q, attendu %q", c.a, got, c.want)
+		}
 	}
 }
 

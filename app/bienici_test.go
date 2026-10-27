@@ -135,6 +135,37 @@ func TestDecoderReponseBienici(t *testing.T) {
 	}
 }
 
+// Au-delà de deux mois, Bien'ici remplace la date de publication par le
+// 1er janvier 1970 et donne un seuil dans thresholdDate.
+func TestDecoderDatePubliceeMasquee(t *testing.T) {
+	var a annonceBienici
+	brut := `{"id": "x", "publicationDate": "1970-01-01T00:00:00.000Z",
+		"modificationDate": "2026-10-26T08:45:50.405Z", "thresholdDate": "2026-08-28T00:00:00.000Z"}`
+	if err := json.Unmarshal([]byte(brut), &a); err != nil {
+		t.Fatal(err)
+	}
+	out := a.versAnnonce("Bien'ici")
+	if !out.Publiee.IsZero() {
+		t.Errorf("date 1970 retenue : %v", out.Publiee)
+	}
+	if want := time.Date(2026, 8, 28, 0, 0, 0, 0, time.UTC); !out.PublieeAvant.Equal(want) {
+		t.Errorf("seuil = %v, attendu %v", out.PublieeAvant, want)
+	}
+
+	// Une vraie date l'emporte, et la date de modification n'est jamais prise
+	// pour celle de publication.
+	brut = `{"id": "y", "publicationDate": "2026-10-23T16:44:05.977Z",
+		"modificationDate": "2026-10-26T07:54:10.951Z"}`
+	a = annonceBienici{}
+	if err := json.Unmarshal([]byte(brut), &a); err != nil {
+		t.Fatal(err)
+	}
+	out = a.versAnnonce("Bien'ici")
+	if out.Publiee.Day() != 23 || !out.PublieeAvant.IsZero() {
+		t.Errorf("publiée = %v, avant = %v", out.Publiee, out.PublieeAvant)
+	}
+}
+
 func TestNombreBienici(t *testing.T) {
 	cas := []struct {
 		json string

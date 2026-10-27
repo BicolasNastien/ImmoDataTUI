@@ -763,8 +763,12 @@ func (m model) contenuAnnonces() string {
 		if a.Pro {
 			details += " · professionnel"
 		}
-		if !a.Publiee.IsZero() {
+		switch {
+		case !a.Publiee.IsZero():
 			details += " · publiée le " + a.Publiee.Format("02/01/2006")
+		case !a.PublieeAvant.IsZero():
+			details += " · publiée avant le " + a.PublieeAvant.Format("02/01/2006") +
+				" (le portail masque la date au-delà de deux mois)"
 		}
 		b.WriteString("  " + styleDim.Render(details) + "\n")
 		b.WriteString("  " + styleDim.Render(a.URL) + "\n")

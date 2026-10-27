@@ -79,6 +79,11 @@ type Annonce struct {
 	Pro     bool // annonce déposée par un professionnel
 	Publiee time.Time
 
+	// PublieeAvant : quand le portail masque la date de publication, la seule
+	// chose qu'on sait est qu'elle est antérieure à ce seuil. Bien'ici le fait
+	// pour toute annonce de plus de deux mois. Exclusif de Publiee.
+	PublieeAvant time.Time
+
 	// PrixActe : le prix tel qu'il figurera dans l'acte de vente, donc dans
 	// DVF. Il diffère du prix affiché quand les honoraires d'agence sont à la
 	// charge de l'acheteur : l'annonce les inclut, l'acte non. Zéro : inconnu,
@@ -88,6 +93,19 @@ type Annonce struct {
 	// Viager : le prix affiché n'est que le bouquet, la rente vient en plus.
 	// Il ne se compare à aucune vente ordinaire.
 	Viager bool
+}
+
+// LibellePublication dit quand l'annonce a été publiée, ou ce qu'on en sait.
+// Court, pour tenir dans une colonne : « 12/10/26 », « <28/08/26 », « – ».
+func (a Annonce) LibellePublication() string {
+	switch {
+	case !a.Publiee.IsZero():
+		return a.Publiee.Format("02/01/06")
+	case !a.PublieeAvant.IsZero():
+		return "<" + a.PublieeAvant.Format("02/01/06")
+	default:
+		return "–"
+	}
 }
 
 // PrixCompare est le prix à confronter à DVF.
@@ -334,7 +352,16 @@ func (t TriAnnonces) cle(a Annonce) float64 {
 	case TriATerrain:
 		return a.SurfaceTerrain
 	case TriADate:
-		return float64(a.Publiee.Unix())
+		// Une date masquée se range juste avant son seuil : plus ancienne que
+		// toutes les annonces datées, dans un sens comme dans l'autre. Entre
+		// elles, l'ordre est inconnu — l'identité les départage.
+		switch {
+		case !a.Publiee.IsZero():
+			return float64(a.Publiee.Unix())
+		case !a.PublieeAvant.IsZero():
+			return float64(a.PublieeAvant.Unix() - 1)
+		}
+		return 0
 	default:
 		return a.Prix
 	}
