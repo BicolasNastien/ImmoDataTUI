@@ -277,6 +277,13 @@ func TestOngletMarche(t *testing.T) {
 	if m.(model).ecran != ecranStats {
 		t.Error("ouvrir une annonce ne doit pas quitter l'onglet")
 	}
+	if a, _ := m.(model).annonceMarche(); !m.(model).suivi.Vue(a) {
+		t.Error("une annonce ouverte depuis l'onglet doit être marquée vue")
+	}
+	m = envoyer(m, touche("m"))
+	if a, _ := m.(model).annonceMarche(); m.(model).suivi.Vue(a) {
+		t.Error("« m » doit retirer la marque dans l'onglet aussi")
+	}
 
 	// Revenir sur l'onglet ne relance rien : les annonces sont gardées.
 	m, _ = m.Update(touche("tab"))

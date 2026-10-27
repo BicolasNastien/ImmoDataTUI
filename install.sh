@@ -179,7 +179,7 @@ ${XDG_CACHE_HOME:-$HOME/.cache}/$nom
 	fi
 
 	echo
-	echo "Données locales (extraits par commune, archives téléchargées, contours) :"
+	echo "Données locales (extraits par commune, archives téléchargées, contours, annonces vues) :"
 	for d in $presents; do
 		echo "  $(du -sh "$d" 2>/dev/null | cut -f1)	$d"
 	done

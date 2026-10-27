@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -49,8 +50,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	m := NouveauModele(racine, villes)
+	// Le suivi des annonces vit dans le dossier de l'utilisateur, quelle que
+	// soit la racine choisie : ce qu'on a déjà vu ne dépend pas de l'endroit où
+	// l'on range les extraits DVF.
+	if dir, err := dossierUtilisateur(); err == nil {
+		suivi, err := ChargerSuivi(filepath.Join(dir, "annonces.json"), time.Now())
+		m.suivi = suivi
+		if err != nil {
+			m.noteVue = err.Error()
+		}
+	}
+
 	p := tea.NewProgram(
-		NouveauModele(racine, villes),
+		m,
 		tea.WithAltScreen(),
 		tea.WithMouseCellMotion(), // survol et clic sur la carte
 	)
@@ -69,6 +82,16 @@ func racineParDefaut() (string, error) {
 	if info, err := os.Stat("data"); err == nil && info.IsDir() {
 		return "data", nil
 	}
+	dir, err := dossierUtilisateur()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(dir, "data"), nil
+}
+
+// dossierUtilisateur est le dossier du programme selon la convention de chaque
+// plateforme. Il contient la racine par défaut et le suivi des annonces.
+func dossierUtilisateur() (string, error) {
 	var base string
 	switch runtime.GOOS {
 	case "darwin":
@@ -97,5 +120,5 @@ func racineParDefaut() (string, error) {
 			base = filepath.Join(home, ".local", "share")
 		}
 	}
-	return filepath.Join(base, "immodata", "data"), nil
+	return filepath.Join(base, "immodata"), nil
 }

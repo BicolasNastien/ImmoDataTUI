@@ -12,6 +12,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -124,6 +125,9 @@ func (m model) appliquerMarche(msg msgMarche) (tea.Model, tea.Cmd) {
 	m.marche.total = msg.res.Total
 	m.marche.erreurs = msg.res.Erreurs
 	m.curMarche = 0
+	if err := m.suivi.Croiser(m.marche.annonces, time.Now()); err != nil {
+		m.noteVue = err.Error()
+	}
 	if m.ecran == ecranStats && m.onglets[m.curOnglet] == ongletMarche {
 		m.majStats()
 	}
@@ -167,6 +171,11 @@ func (m *model) vueMarche() string {
 		entete += fmt.Sprintf(" (les moins chères sur %d annoncées)", m.marche.total)
 	}
 	b.WriteString(entete + "\n")
+	if nouvelles, vues := m.suivi.Compter(as); nouvelles+vues > 0 {
+		b.WriteString("  " + styleDim.Render(fmt.Sprintf(
+			"%s (●) depuis le lancement, %s (✓) · m pour marquer vue ou non vue",
+			pluriel(nouvelles, "nouvelle"), pluriel(vues, "déjà vue"))) + "\n")
+	}
 	for nom, err := range m.marche.erreurs {
 		b.WriteString("  " + styleWarn.Render(nom+" : "+err.Error()) + "\n")
 	}
@@ -294,7 +303,22 @@ func (m model) ouvrirAnnonceMarche() (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 	m.noteVue = "Ouverture de l'annonce…"
+	if err := m.suivi.MarquerVue(a, time.Now()); err != nil {
+		m.noteVue = err.Error()
+	}
+	m.majStats()
 	return m, cmdOuvrirVue(a.URL)
+}
+
+// basculerAnnonceMarche : la touche « m » de l'onglet En vente.
+func (m model) basculerAnnonceMarche() (tea.Model, tea.Cmd) {
+	a, ok := m.annonceMarche()
+	if !ok {
+		return m, nil
+	}
+	m.noteVue = noteBascule(m.suivi.Basculer(a, time.Now()))
+	m.majStats()
+	return m, nil
 }
 
 // annonceSous renvoie le rang de l'annonce affichée à la ligne écran y. Les
@@ -322,10 +346,10 @@ func (m *model) ecrireComparaisons(b *strings.Builder, t TypeBien, lignes []Comp
 			premiere = false
 			b.WriteString("\n  " + styleSection.Render(strings.ToUpper(t.String())) + "\n\n")
 			if t == BienTerrain {
-				b.WriteString(styleDim.Render(fmt.Sprintf("  %9s %13s %13s %8s %11s   %s",
+				b.WriteString(styleDim.Render(fmt.Sprintf("    %9s %13s %13s %8s %11s   %s",
 					"Terrain", "Prix acte", "Estimé DVF", "Écart", "Similaires", "Annonce")) + "\n")
 			} else {
-				b.WriteString(styleDim.Render(fmt.Sprintf("  %8s %3s %9s %13s %13s %8s %11s   %s",
+				b.WriteString(styleDim.Render(fmt.Sprintf("    %8s %3s %9s %13s %13s %8s %11s   %s",
 					"Surface", "P.", "Terrain", "Prix acte", "Estimé DVF", "Écart", "Similaires", "Annonce")) + "\n")
 			}
 		}
@@ -335,13 +359,17 @@ func (m *model) ecrireComparaisons(b *strings.Builder, t TypeBien, lignes []Comp
 
 		ligne := strings.Count(b.String(), "\n")
 		m.lignesAnnonces[i] = ligne
-		if i == m.curMarche {
+		marque := m.suivi.Marque(c.Annonce) + " "
+		switch {
+		case i == m.curMarche:
 			// Une ligne sélectionnée est rendue d'un seul style : des couleurs
 			// imbriquées couperaient la surbrillance à chaque séquence de fin.
 			m.ligneSel = ligne
-			b.WriteString(styleSel.Render("▸ "+ligneComparaison(c, false)) + "\n")
-		} else {
-			b.WriteString("  " + ligneComparaison(c, true) + "\n")
+			b.WriteString(styleSel.Render("▸ "+marque+ligneComparaison(c, false)) + "\n")
+		case m.suivi.Vue(c.Annonce):
+			b.WriteString("  " + styleDim.Render(marque+ligneComparaison(c, false)) + "\n")
+		default:
+			b.WriteString("  " + marque + ligneComparaison(c, true) + "\n")
 		}
 	}
 	if sans > 0 {

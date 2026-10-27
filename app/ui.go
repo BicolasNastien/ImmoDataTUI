@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -223,6 +224,7 @@ type model struct {
 	erreursAnn     map[string]error
 	chercheAnn     bool
 	annulerAnn     context.CancelFunc
+	suivi          *SuiviAnnonces // partagé entre copies du modèle, voir vues.go
 
 	// Les annonces de la commune affichée, pour l'onglet « En vente ».
 	marche         etatMarche
@@ -249,6 +251,7 @@ func NouveauModele(racine string, villes []Ville) model {
 		// Les plus récentes d'abord : quand on suit un marché, la question est
 		// « qu'est-ce qui est sorti depuis la dernière fois ? ».
 		triAnn:     TriAnnonces{Critere: TriADate, Decroissant: true},
+		suivi:      nouveauSuivi("", time.Now()),
 		saisieZone: nouvelleSaisieZone(),
 		ecran:      ecranAttente,
 		attente:    "Chargement des contours…",
@@ -571,6 +574,13 @@ func (m model) touche(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		// Comme sur l'écran des annonces : ouvrir l'annonce sélectionnée.
 		if m.ecran == ecranStats && m.onglets[m.curOnglet] == ongletMarche {
 			return m.ouvrirAnnonceMarche()
+		}
+		return m, nil
+
+	case "m":
+		// Comme sur l'écran des annonces : marquer vue ou non vue.
+		if m.ecran == ecranStats && m.onglets[m.curOnglet] == ongletMarche {
+			return m.basculerAnnonceMarche()
 		}
 		return m, nil
 

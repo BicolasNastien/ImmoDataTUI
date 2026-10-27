@@ -121,7 +121,7 @@ function Desinstaller {
     }
 
     Write-Host ""
-    Write-Host "Données locales (extraits par commune, archives téléchargées, contours) :"
+    Write-Host "Données locales (extraits par commune, archives téléchargées, contours, annonces vues) :"
     foreach ($d in $dossiersDonnees) {
         $taille = (Get-ChildItem $d -Recurse -File -Force | Measure-Object Length -Sum).Sum
         Write-Host ("  {0,8:N1} Mo  {1}" -f ($taille / 1MB), $d)

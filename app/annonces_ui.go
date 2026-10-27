@@ -16,6 +16,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -329,6 +330,9 @@ func (m model) appliquerAnnonces(msg msgAnnonces) (tea.Model, tea.Cmd) {
 	m.totalAnn = msg.res.Total
 	m.erreursAnn = msg.res.Erreurs
 	m.curAnnonce = 0
+	if err := m.suivi.Croiser(m.annonces, time.Now()); err != nil {
+		m.noteVue = err.Error()
+	}
 	if len(m.annonces) == 0 {
 		m.alerte = "Aucun bien ne correspond. Élargis un critère."
 	} else {
@@ -528,7 +532,18 @@ func (m model) toucheResultats(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter", "o":
 		if a, ok := m.annonceCourante(); ok {
 			m.noteVue = "Ouverture de l'annonce…"
+			if err := m.suivi.MarquerVue(a, time.Now()); err != nil {
+				m.noteVue = err.Error()
+			}
+			m = m.rafraichirAnnonces()
 			return m, cmdOuvrirVue(a.URL)
+		}
+		return m, nil
+
+	case "m":
+		if a, ok := m.annonceCourante(); ok {
+			m.noteVue = noteBascule(m.suivi.Basculer(a, time.Now()))
+			m = m.rafraichirAnnonces()
 		}
 		return m, nil
 
@@ -552,6 +567,27 @@ func (m model) retrier() (tea.Model, tea.Cmd) {
 		m.vp.GotoTop()
 	}
 	return m, nil
+}
+
+// rafraichirAnnonces réécrit le tableau sans bouger le défilement : une marque
+// qui change ne doit pas renvoyer l'utilisateur en haut de la liste.
+func (m model) rafraichirAnnonces() model {
+	if m.pretVP {
+		m.vp.SetContent(m.contenuAnnonces())
+	}
+	return m
+}
+
+// noteBascule rend compte de la touche « m ».
+func noteBascule(vue bool, err error) string {
+	switch {
+	case err != nil:
+		return err.Error()
+	case vue:
+		return "Annonce marquée comme vue."
+	default:
+		return "Annonce marquée comme non vue."
+	}
 }
 
 func (m model) deplacerAnnonce(pas int) (tea.Model, tea.Cmd) {
@@ -688,14 +724,18 @@ func (m model) vueResultats() string {
 
 	b.WriteString("\n  " + styleAide.Render(
 		"↑/↓ parcourir · s critère de tri · i inverser · ↵ ouvrir l'annonce · "+
-			"r relancer · f critères · q quitter"))
+			"m vue/non vue · r relancer · f critères · q quitter"))
+	b.WriteString("\n  " + styleDim.Render(
+		"● nouvelle depuis le lancement · ✓ déjà vue (ouverte ou marquée)"))
 	b.WriteString("\n  " + styleDim.Render(m.avertissementEchantillon()) + "\n")
 	return b.String()
 }
 
 func (m model) titreResultats() string {
-	return fmt.Sprintf("Biens en vente (%d) — tri par %s",
-		len(m.annonces), m.triAnn.String())
+	nouvelles, vues := m.suivi.Compter(m.annonces)
+	return fmt.Sprintf("Biens en vente (%d · %s · %s) — tri par %s",
+		len(m.annonces), pluriel(nouvelles, "nouvelle"), pluriel(vues, "vue"),
+		m.triAnn.String())
 }
 
 // avertissementEchantillon dit ce que le tableau n'est pas.
@@ -722,7 +762,7 @@ func (m model) avertissementEchantillon() string {
 func (m model) contenuAnnonces() string {
 	var b strings.Builder
 
-	entete := fmt.Sprintf("  %-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
+	entete := fmt.Sprintf("    %-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
 		"PRIX", "€/M²", "TYPE", "SURFACE", "TERRAIN", "P.", "PUBLIÉE", "COMMUNE", "DIST.")
 	b.WriteString(styleSection.Render(entete) + "\n")
 
@@ -741,14 +781,18 @@ func (m model) contenuAnnonces() string {
 			commune += " " + a.CodePostal
 		}
 
-		ligne := fmt.Sprintf("%-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
-			euros(a.Prix), eurosM2(a.PrixM2()), a.Type.String(),
+		ligne := fmt.Sprintf("%s %-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
+			m.suivi.Marque(a), euros(a.Prix), eurosM2(a.PrixM2()), a.Type.String(),
 			m2(a.Surface), m2(a.SurfaceTerrain), pieces, a.LibellePublication(),
 			tronquer(commune, 22), dist)
 
-		if i == m.curAnnonce {
+		switch {
+		case i == m.curAnnonce:
 			b.WriteString(styleSel.Render(" ▸"+ligne+" ") + "\n")
-		} else {
+		case m.suivi.Vue(a):
+			// Ce qu'on a déjà examiné passe au second plan.
+			b.WriteString("  " + styleDim.Render(ligne) + "\n")
+		default:
 			b.WriteString("  " + ligne + "\n")
 		}
 	}
@@ -768,6 +812,9 @@ func (m model) contenuAnnonces() string {
 		case !a.PublieeAvant.IsZero():
 			details += " · publiée avant le " + a.PublieeAvant.Format("02/01/2006") +
 				" (le portail masque la date au-delà de deux mois)"
+		}
+		if t, ok := m.suivi.Vues[cleSuivi(a)]; ok {
+			details += " · vue le " + t.Format("02/01/2006")
 		}
 		b.WriteString("  " + styleDim.Render(details) + "\n")
 		b.WriteString("  " + styleDim.Render(a.URL) + "\n")
