@@ -317,7 +317,7 @@ const (
 )
 
 // LibellesTriAnnonces : l'ordre suit celui de la constante.
-var LibellesTriAnnonces = []string{"prix", "prix/m²", "surface", "terrain", "date"}
+var LibellesTriAnnonces = []string{"prix", "prix/m²", "surface", "terrain", "publication"}
 
 func (t TriAnnonces) String() string {
 	sens := "↑"

@@ -516,9 +516,8 @@ func (m model) toucheResultats(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case "s":
-		// Changer de critère de tri. Le tri par prix est celui qu'on veut
-		// neuf fois sur dix : c'est donc lui qui est en place au départ, et
-		// « s » sert à en sortir, pas à y arriver.
+		// Changer de critère de tri. Le départ est la date de publication, la
+		// plus récente en tête : « s » sert à en sortir, pas à y arriver.
 		m.triAnn = m.triAnn.Suivant()
 		return m.retrier()
 
@@ -723,8 +722,8 @@ func (m model) avertissementEchantillon() string {
 func (m model) contenuAnnonces() string {
 	var b strings.Builder
 
-	entete := fmt.Sprintf("  %-13s %10s %-12s %8s %9s %5s  %-22s %s",
-		"PRIX", "€/M²", "TYPE", "SURFACE", "TERRAIN", "P.", "COMMUNE", "DIST.")
+	entete := fmt.Sprintf("  %-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
+		"PRIX", "€/M²", "TYPE", "SURFACE", "TERRAIN", "P.", "PUBLIÉE", "COMMUNE", "DIST.")
 	b.WriteString(styleSection.Render(entete) + "\n")
 
 	for i, a := range m.annonces {
@@ -742,9 +741,9 @@ func (m model) contenuAnnonces() string {
 			commune += " " + a.CodePostal
 		}
 
-		ligne := fmt.Sprintf("%-13s %10s %-12s %8s %9s %5s  %-22s %s",
+		ligne := fmt.Sprintf("%-13s %10s %-12s %8s %9s %5s  %-9s  %-22s %s",
 			euros(a.Prix), eurosM2(a.PrixM2()), a.Type.String(),
-			m2(a.Surface), m2(a.SurfaceTerrain), pieces,
+			m2(a.Surface), m2(a.SurfaceTerrain), pieces, a.LibellePublication(),
 			tronquer(commune, 22), dist)
 
 		if i == m.curAnnonce {

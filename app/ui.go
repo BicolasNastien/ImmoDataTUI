@@ -246,9 +246,9 @@ func NouveauModele(racine string, villes []Ville) model {
 		onglets: ongletsStandard,
 		saisie:  nouvelleSaisie(),
 		formAnn: nouveauFormAnnonces(),
-		// Le tri par prix croissant est le point de départ : c'est la question
-		// qu'on se pose en ouvrant un site d'annonces.
-		triAnn:     TriAnnonces{Critere: TriAPrix},
+		// Les plus récentes d'abord : quand on suit un marché, la question est
+		// « qu'est-ce qui est sorti depuis la dernière fois ? ».
+		triAnn:     TriAnnonces{Critere: TriADate, Decroissant: true},
 		saisieZone: nouvelleSaisieZone(),
 		ecran:      ecranAttente,
 		attente:    "Chargement des contours…",
