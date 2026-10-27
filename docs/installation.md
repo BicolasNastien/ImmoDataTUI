@@ -229,7 +229,8 @@ Les données téléchargées et le cache sont conservés.
 
 Le script d'installation sait aussi désinstaller. Il supprime le binaire (et,
 sous Windows, son entrée du `PATH`), affiche la taille des données locales —
-extraits par commune, archives téléchargées, contours — puis **demande s'il
+extraits par commune, archives téléchargées, contours, annonces déjà vues —
+puis **demande s'il
 faut les supprimer**. La réponse par défaut est non.
 
 **Linux et macOS**

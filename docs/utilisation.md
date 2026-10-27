@@ -116,6 +116,7 @@ vente.
 | `s` | changer le tri du tableau des ventes : date, prix, €/m², surface |
 | `↵` | ouvrir la fiche de la vente sélectionnée (onglet En vente : ouvrir l'annonce) |
 | `o` | onglet En vente : ouvrir l'annonce sélectionnée dans le navigateur |
+| `m` | onglet En vente : marquer l'annonce vue, ou retirer la marque |
 | `v` `c` `V` | voir la vente sélectionnée dans le navigateur : carte, cadastre, vue de la rue |
 
 ### Fiche d'une vente
@@ -155,9 +156,10 @@ vente.
 | Touche | Action |
 |---|---|
 | `↑` `↓` | parcourir les annonces |
-| `s` | changer le tri : prix, €/m², surface, terrain, date |
+| `s` | changer le tri : prix, €/m², surface, terrain, publication |
 | `i` | inverser le sens du tri |
-| `↵` ou `o` | ouvrir l'annonce dans le navigateur |
+| `↵` ou `o` | ouvrir l'annonce dans le navigateur (elle est marquée vue) |
+| `m` | marquer l'annonce vue, ou retirer la marque |
 | `r` | relancer la recherche |
 | `f`, `esc` ou `←` | revenir aux critères |
 
@@ -328,7 +330,9 @@ de l'annonce. Avant le calcul :
 L'onglet affiche une synthèse par type, puis chaque annonce de la plus
 avantageuse à la plus chère ; celles qui n'ont pas pu être comparées (sans
 surface, ou moins de cinq ventes similaires) viennent ensuite, marquées `–`.
-`↵` ou `o` ouvre l'annonce sélectionnée.
+`↵` ou `o` ouvre l'annonce sélectionnée. Les marques ● (nouvelle) et ✓ (vue)
+y fonctionnent comme dans la recherche d'annonces (voir
+[Nouvelles et déjà vues](#nouvelles-et-déjà-vues)).
 
 À garder en tête : un prix demandé se négocie, quelques pour cent au-dessus des
 ventes sont donc normaux ; et sur plusieurs millésimes, l'écart inclut
@@ -357,9 +361,44 @@ carte ──« a »──▶ critères ──« ↵ »──▶ résultats ─�
 | Exclure le neuf | écarte programmes et biens neufs |
 | Nombre max de résultats | 200 par défaut |
 
-Un champ vide ne contraint rien. Le tri par défaut est le prix croissant ; `s`
-et `i` le changent instantanément, sans nouvelle requête. Les valeurs absentes
-restent toujours en fin de liste.
+Un champ vide ne contraint rien.
+
+### Ordre de publication
+
+Les résultats s'ouvrent triés par **date de publication**, la plus récente en
+tête : c'est la date à laquelle l'annonce a été mise en ligne, pas celle de sa
+dernière modification (une baisse de prix, une photo ajoutée ne la font pas
+remonter). La colonne *Publiée* l'affiche.
+
+Bien'ici ne publie plus cette date pour les annonces de **plus de deux mois** :
+elles apparaissent alors comme `<28/08/26` (« publiée avant le 28/08/26 ») et
+viennent après toutes les annonces datées, sans ordre connu entre elles.
+
+`s` change de critère (prix, €/m², surface, terrain, publication) et `i`
+inverse le sens, instantanément et sans nouvelle requête. Les valeurs absentes
+restent toujours en fin de liste. Au lancement de la recherche, le portail est
+interrogé dans l'ordre du tri en place : avec le tri par publication, ce sont
+donc les annonces les plus récentes qui sont rapportées.
+
+### Nouvelles et déjà vues
+
+La première colonne du tableau marque chaque annonce :
+
+| Marque | Sens |
+|---|---|
+| `●` | **nouvelle** : jamais apparue dans une recherche avant ce lancement du programme |
+| `✓` | **vue** : ouverte dans le navigateur, ou marquée à la main avec `m` (la ligne passe en grisé) |
+| (vide) | déjà croisée lors d'un lancement précédent, jamais ouverte |
+
+Le titre du tableau compte les nouvelles et les vues, et le détail de
+l'annonce sélectionnée donne la date à laquelle elle a été vue. `m` pose ou
+retire la marque « vue » sans ouvrir l'annonce.
+
+Une annonce reste « nouvelle » pendant toute la session, même si l'on relance
+la recherche. Au lancement suivant, elle ne l'est plus. Le suivi est enregistré
+dans le fichier `annonces.json` du dossier du programme (voir
+[Emplacements](sources.md#suivi-des-annonces)), et une annonce dont on n'a plus
+eu de nouvelles depuis un an en est retirée.
 
 Ce que ce tableau n'est pas :
 

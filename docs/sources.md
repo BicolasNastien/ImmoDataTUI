@@ -117,6 +117,14 @@ mis en cache : les annonces changent trop vite.
 Les annonces ne donnent pas d'adresse exacte : leur position est celle d'un
 quartier ou d'une commune.
 
+**Dates de publication.** Bien'ici fournit une date de publication
+(`publicationDate`) distincte de la date de dernière modification
+(`modificationDate`) : seule la première sert au tri. Pour les annonces de plus
+de deux mois, le portail la remplace par le 1er janvier 1970 et indique
+seulement un seuil (`thresholdDate`, aujourd'hui moins soixante jours) : on sait
+alors que l'annonce est antérieure à ce seuil, pas quand elle a été publiée.
+Sur Bayonne, en octobre 2026, c'était le cas d'environ la moitié des annonces.
+
 **Pourquoi pas leboncoin.** `www.leboncoin.fr` et `api.leboncoin.fr` refusent
 (403) toute requête qui ne vient pas d'un navigateur, et leur `robots.txt`
 interdit explicitement tout accès automatisé sans autorisation. Ce refus est
@@ -160,6 +168,21 @@ Dans l'ordre de priorité :
 | Windows | `%LocalAppData%\immodata\data` |
 
 On y trouve un dossier par commune : `<Commune>/<année>/<code INSEE>.csv`.
+
+### Suivi des annonces
+
+Les annonces déjà croisées et déjà vues sont enregistrées dans `annonces.json`,
+dans le dossier du programme — le parent du dossier de données standard, quel
+que soit le dossier de données utilisé :
+
+| Système | Fichier |
+|---|---|
+| Linux | `$XDG_DATA_HOME/immodata/annonces.json`, à défaut `~/.local/share/immodata/annonces.json` |
+| macOS | `~/Library/Application Support/immodata/annonces.json` |
+| Windows | `%LocalAppData%\immodata\annonces.json` |
+
+Il ne contient que des identifiants d'annonces et des dates. Le supprimer remet
+à zéro les marques « nouvelle » et « vue ».
 
 ### Cache
 
